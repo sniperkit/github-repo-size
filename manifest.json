@@ -58,7 +58,14 @@
           "js/contents/file_icon.js"
       ],
       "run_at": "document_end"
+    },
+
+    {
+      "matches": ["*://stackoverflow.com/*"],
+      "css": ["css/providers/stackoverflow/hide-bar.css"],
+      "run_at": "document_start"
     }
+
   ],
   "browser_action": {
     "default_icon": {
