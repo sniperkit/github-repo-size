@@ -13,6 +13,45 @@ var excludeURIs = [
 
 let githubToken
 
+var snk_icon_dict = {
+  'clone': '<i class="octicon octicon-search"></i>',
+  'index': '<i class="octicon octicon-zap"></i>'
+}
+
+// insert clone button
+var cloneIcon = document.createElement('i');
+cloneIcon.innerHTML = snk_icon_dict['clone']
+
+const cloneButton = () => {
+    var buttonHeader = document.querySelector('ul.pagehead-actions')
+    var cloneButton = buttonHeader.querySelector('#snk-clone-button-container')
+    if (!cloneButton) {
+      cloneButton = document.createElement('li')
+      cloneButton.id = 'snk-clone-button-container'
+      buttonHeader.insertBefore(cloneButton, buttonHeader.lastChild)
+    }
+    cloneButton.innerHTML = "<a id='snk-clone-button' class='btn btn-sm minibutton snk-button tooltipped tooltipped-s' aria-label='Clone locally this repository.\nKeyboard shortcut: shift-C'>" + cloneIcon.innerHTML + " Clone </a>"
+    // document.getElementById('clone-button-container').addEventListener("click", clickCloneButton)
+}
+cloneButton()
+
+// insert index button
+var indexIcon = document.createElement('i');
+indexIcon.innerHTML = snk_icon_dict['index']
+
+const indexButton = () => {
+    var buttonHeader = document.querySelector('ul.pagehead-actions')
+    var indexButton = buttonHeader.querySelector('#snk-index-button-container')
+    if (!indexButton) {
+      indexButton = document.createElement('li')
+      indexButton.id = 'snk-clone-button-container'
+      buttonHeader.insertBefore(indexButton, buttonHeader.lastChild)
+    }
+    indexButton.innerHTML = "<a id='snk-clone-button' class='btn btn-sm minibutton snk-button tooltipped tooltipped-s' aria-label='Index the repository tree in Sniperkit webservice.\nKeyboard shortcut: shift-I'>" + indexIcon.innerHTML + " Index </a>"
+    // document.getElementById('sg-search-button-container').addEventListener("click", clickIndexButton)
+}
+indexButton()
+
 const isTree = (uri) => {
   const repoURI = uri.split('/')
   return repoURI.length === 2 || repoURI[2] === 'tree'

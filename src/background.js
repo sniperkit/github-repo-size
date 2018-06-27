@@ -1,10 +1,22 @@
+'use strict';
+
 /* global chrome, alert, prompt, confirm */
 
+/*
+  Refs:
+  - https://github.com/sniperkit/GitHub-Helper.Chrome/blob/master/res/js/background.js
+  - 
+
+*/
+
+// internal vars
 const GITHUB_TOKEN_KEY = 'x-github-token'
 const TOKEN_FEATURE_INFORMATION_KEY = 'user-knows-token-feature'
 
+// chrome 
 const storage = chrome.storage.sync || chrome.storage.local
 
+// setGithubToken function allows...
 function setGithubToken (key, cb) {
   const obj = {}
 
@@ -17,6 +29,7 @@ function setGithubToken (key, cb) {
   })
 }
 
+// handleOldGithubToken function allows...
 function handleOldGithubToken (cb) {
   storage.get(GITHUB_TOKEN_KEY, function (storedData) {
     const oldGithubToken = storedData[GITHUB_TOKEN_KEY]
@@ -37,6 +50,7 @@ function handleOldGithubToken (cb) {
   })
 }
 
+// userNowKnowsAboutGithubTokenFeature function allows...
 const userNowKnowsAboutGithubTokenFeature = (cb) => {
   const obj = {}
   obj[TOKEN_FEATURE_INFORMATION_KEY] = true
@@ -44,6 +58,7 @@ const userNowKnowsAboutGithubTokenFeature = (cb) => {
   storage.set(obj, cb)
 }
 
+// informUserAboutGithubTokenFeature function allows...
 function informUserAboutGithubTokenFeature () {
   storage.get(TOKEN_FEATURE_INFORMATION_KEY, function (storedData) {
     const userKnows = storedData[TOKEN_FEATURE_INFORMATION_KEY]
@@ -62,19 +77,34 @@ function informUserAboutGithubTokenFeature () {
   })
 }
 
+// askGithubToken function allows to set a github_token in chrome store
 const askGithubToken = (cb) => {
   const githubToken = prompt('Please enter your Github token')
-
   if (githubToken === null) return
-
   if (githubToken) {
     setGithubToken(githubToken, cb)
   } else {
     alert('You have entered an empty token.')
-
     cb()
   }
 }
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+    var matches = tab.url.match(/:\/\/github\.com\/([a-zA-Z0-9\.-]+)\/([a-zA-Z0-9\.-]+)/);
+    if (matches) {
+        window.open("http://sourcegraph.com/github.com/" + matches[1] + "/" + matches[2]);
+    }
+});
+
+chrome.runtime.onInstalled.addListener(function (details) {
+  console.log('previousVersion', details.previousVersion);
+});
+
+chrome.tabs.onUpdated.addListener(function (tabId) {
+  chrome.pageAction.show(tabId);
+});
+
+console.log('\'Hello \'SNK! Event Page for Page Action');
 
 chrome.browserAction.onClicked.addListener((tab) => {
   handleOldGithubToken((askToSetToken) => {

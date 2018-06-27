@@ -5,6 +5,10 @@
   "description": "Automatically adds repository size to GitHub's repository summary",
   "homepage_url": "https://github.com/harshjv/github-repo-size",
   "author": "Harsh Vakharia",
+  "content_security_policy" : "default-src 'self'; connect-src *;",
+  "permissions": [
+    "https://assets-cdn.github.com/*"
+  ],
   "icons": {
     "16": "icons/ghrs16.png",
     "48": "icons/ghrs48.png",
@@ -12,20 +16,45 @@
   },
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "nativeMessaging",
+    "https://*.sniperkit.com/*",
+    "http://github.com/",
+    "https://github.com/"
+  ],
+  "web_accessible_resources": [
+    "contentscript.js",
+    "chromereload.js",
+    "3rdparty/octicons/fonts/*.*",
+    "3rdparty/devicons/fonts/*.*"
   ],
   "background" : {
     "scripts" : [
+      "src/main.js",
       "src/background.js"
     ]
+  },
+  "options_page": "html/options.html",
+  "options_ui": {
+      "page": "src/options.html",
+      "chrome_style": true
   },
   "content_scripts": [
     {
       "matches": [
+        "https://github.com/*", 
+        "http://github.com/*", 
         "*://github.com/*"
       ],
+      "css": [
+        "css/contents/file_icon.css", 
+        "3rdparty/octicons/css/octicons.css",
+        "3rdparty/devicons/css/devicons.css"
+      ],
       "js": [
-        "src/inject.js"
+          "src/inject.js",
+          "src/clone_button.js",
+          "js/contents/file_icon.js"
       ],
       "run_at": "document_end"
     }
