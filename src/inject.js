@@ -18,6 +18,16 @@ var snk_icon_dict = {
   'index': '<i class="octicon octicon-zap"></i>'
 }
 
+// callbacks
+const clickCloneButton = () => {
+  alert("Clone repository function is not implememted yet.")
+}
+
+const clickIndexButton = () => {
+  alert("Index repository function is not implememted yet.")
+}
+
+
 // insert clone button
 var cloneIcon = document.createElement('i');
 cloneIcon.innerHTML = snk_icon_dict['clone']
@@ -31,7 +41,7 @@ const cloneButton = () => {
       buttonHeader.insertBefore(cloneButton, buttonHeader.lastChild)
     }
     cloneButton.innerHTML = "<a id='snk-clone-button' class='btn btn-sm minibutton snk-button tooltipped tooltipped-s' aria-label='Clone locally this repository.\nKeyboard shortcut: shift-C'>" + cloneIcon.innerHTML + " Clone </a>"
-    // document.getElementById('clone-button-container').addEventListener("click", clickCloneButton)
+    document.getElementById('snk-clone-button').addEventListener("click", clickCloneButton)
 }
 cloneButton()
 
@@ -44,11 +54,11 @@ const indexButton = () => {
     var indexButton = buttonHeader.querySelector('#snk-index-button-container')
     if (!indexButton) {
       indexButton = document.createElement('li')
-      indexButton.id = 'snk-clone-button-container'
+      indexButton.id = 'snk-index-button-container'
       buttonHeader.insertBefore(indexButton, buttonHeader.lastChild)
     }
-    indexButton.innerHTML = "<a id='snk-clone-button' class='btn btn-sm minibutton snk-button tooltipped tooltipped-s' aria-label='Index the repository tree in Sniperkit webservice.\nKeyboard shortcut: shift-I'>" + indexIcon.innerHTML + " Index </a>"
-    // document.getElementById('sg-search-button-container').addEventListener("click", clickIndexButton)
+    indexButton.innerHTML = "<a id='snk-index-button' class='btn btn-sm minibutton snk-button tooltipped tooltipped-s' aria-label='Index the repository tree in Sniperkit webservice.\nKeyboard shortcut: shift-I'>" + indexIcon.innerHTML + " Index </a>"
+    document.getElementById('snk-index-button').addEventListener("click", clickIndexButton)
 }
 indexButton()
 

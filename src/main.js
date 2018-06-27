@@ -2,7 +2,7 @@
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // Relay the contentscript's message to the native app
-    chrome.runtime.sendNativeMessage("org.blx.shell", request)
+    chrome.runtime.sendNativeMessage("org.snk.indexer", request)
     sendResponse({text: "OK"})
 })
 
