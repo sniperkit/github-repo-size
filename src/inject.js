@@ -60,16 +60,26 @@ const getHumanReadableSizeObject = (bytes) => {
   const K = 1024
   const MEASURE = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   const i = Math.floor(Math.log(bytes) / Math.log(K))
+  const size = parseFloat((bytes / Math.pow(K, i)).toFixed(2))
 
   var colorStyle = '#6a737d'
-  if (i == 2) {
-    colorStyle = 'orange'
+
+  if (i <= 1) {
+    colorStyle = '#6a737d'
+  } else if (i == 2) {
+
+    if (size > 20) {
+      colorStyle = 'red'
+    } else {
+      colorStyle = '#24292e'    
+    }
+
   } else if (i > 2) {
     colorStyle = 'red'
   }
 
   return {
-    size: parseFloat((bytes / Math.pow(K, i)).toFixed(2)),
+    size: size,
     measure: MEASURE[i],
     style: colorStyle,
   }
