@@ -240,7 +240,7 @@ const checkForRepoPage = () => {
       if (!tdElems) {
 
         const apiGetRepoTreeURI = getRepoTreeURI(repoURI)
-        console.log("apiGetRepoTreeURI: " + apiGetRepoTreeURI)
+        // console.log("apiGetRepoTreeURI: " + apiGetRepoTreeURI)
         getAPIData(apiGetRepoTreeURI, (data) => {
           const sizeArray = {}
 
