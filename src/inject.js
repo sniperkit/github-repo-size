@@ -1,13 +1,14 @@
 /* global fetch, Request, Headers, chrome, localStorage */
 
+const VALID_HOSTNAME = 'github.com'
 const API = 'https://api.github.com/repos/'
 const LI_TAG_ID = 'github-repo-size'
 const GITHUB_TOKEN_KEY = 'x-github-token'
 
 var excludeURIs = [
-  "github.com/nodejs/node",
-  "github.com/tensorflow/tensorflow",
-  "github.com/django/django",
+  "nodejs/node",
+  "tensorflow/tensorflow",
+  "django/django",
 ]
 
 let githubToken
@@ -130,16 +131,6 @@ const getAPIData = (uri, callback) => {
     'User-Agent': 'sniperkit/snk.chrome.github-repo-size'
   }
 
-  console.log("current uri: " + uri )
-  console.log("exclude uri: " + excludeURIs.includes(uri) )
-
-  const exclude = excludeURIs.includes(uri)
-
-  if (exclude) {
-    console.log("skipping uri from repo-size calculation: " + uri )
-    return
-  }
-
   const token = localStorage.getItem(GITHUB_TOKEN_KEY) || githubToken
 
   if (token) {
@@ -163,46 +154,71 @@ const checkForRepoPage = () => {
   const repoURI = window.location.pathname.substring(1)
   const repoPath = repoURI.split('/').splice(4).join('/').trim()
 
-  if (isTree(repoURI)) {
-    const ns = document.querySelector('ul.numbers-summary')
-    const liElem = document.getElementById(LI_TAG_ID)
-    const tdElems = document.querySelector('span.github-repo-size-td')
+  /*
+    console.log("window.location.href: " + window.location.href )
+    console.log("window.location.hostname: " + window.location.hostname )
+    console.log("window.location.protocol: " + window.location.protocol )
+    console.log("window.location.pathname: " + window.location.pathname )
+    console.log("window.location.pathname.substring(1): " + window.location.pathname.substring(1) )
+    console.log("current uri: " + uri )
+    console.log("exclude uri: " + excludeURIs.includes(uri) )
+  */
 
-    if (ns && !liElem) {
-      getAPIData(getRepoInfoURI(repoURI), (data) => {
-        if (data && data.size) {
-          ns.insertAdjacentHTML('beforeend', getSizeHTML(data.size * 1024))
-        }
-      })
-    }
+  // skip workflow if not valid hostname
+  if (window.location.hostname != VALID_HOSTNAME ) {
+    console.log("invalid hostname: " + window.location.hostname )
+    return
+  }
 
-    if (!tdElems) {
-      getAPIData(getRepoTreeURI(repoURI), (data) => {
-        const sizeArray = {}
+  // const exclude = excludeURIs.includes(window.location.pathname.substring(1))
+  if (excludeURIs.includes(window.location.pathname.substring(1))) {
+    console.log("excluded repo uri: " + window.location.pathname.substring(1) )
+  } else {
 
-        for (const item of data.tree) {
-          if (item.path.startsWith(repoPath)) {
-            const commonPathPrefix = item.path.replace(new RegExp('^' + repoPath + '/?'), '').split('/')[0]
-            sizeArray[commonPathPrefix] = (sizeArray[commonPathPrefix] || 0) + (item.size || 0)
+    if (isTree(repoURI)) {
+      const ns = document.querySelector('ul.numbers-summary')
+      const liElem = document.getElementById(LI_TAG_ID)
+      const tdElems = document.querySelector('span.github-repo-size-td')
+
+      if (ns && !liElem) {
+        getAPIData(getRepoInfoURI(repoURI), (data) => {
+          if (data && data.size) {
+            ns.insertAdjacentHTML('beforeend', getSizeHTML(data.size * 1024))
           }
-        }
+        })
+      }
 
-        const list = document.querySelectorAll('table > tbody tr.js-navigation-item:not(.up-tree)')
-        const files = document.querySelectorAll('table > tbody tr.js-navigation-item:not(.up-tree) td.content a')
-        const ageForReference = document.querySelectorAll('table > tbody tr.js-navigation-item:not(.up-tree) td:last-child')
+      if (!tdElems) {
 
-        let i = 0
+        const apiGetRepoTreeURI = getRepoTreeURI(repoURI)
+        console.log("apiGetRepoTreeURI: " + apiGetRepoTreeURI)
+        getAPIData(apiGetRepoTreeURI, (data) => {
+          const sizeArray = {}
 
-        for (const file of files) {
-          const t = sizeArray[getFileName(file.text)]
+          for (const item of data.tree) {
+            if (item.path.startsWith(repoPath)) {
+              const commonPathPrefix = item.path.replace(new RegExp('^' + repoPath + '/?'), '').split('/')[0]
+              sizeArray[commonPathPrefix] = (sizeArray[commonPathPrefix] || 0) + (item.size || 0)
+            }
+          }
 
-          const td = document.createElement('td')
-          td.className = 'age'
-          td.innerHTML = '<span class="css-truncate css-truncate-target github-repo-size-td">' + getHumanReadableSize(t) + '</span>'
+          const list = document.querySelectorAll('table > tbody tr.js-navigation-item:not(.up-tree)')
+          const files = document.querySelectorAll('table > tbody tr.js-navigation-item:not(.up-tree) td.content a')
+          const ageForReference = document.querySelectorAll('table > tbody tr.js-navigation-item:not(.up-tree) td:last-child')
 
-          list[i].insertBefore(td, ageForReference[i++])
-        }
-      })
+          let i = 0
+
+          for (const file of files) {
+            const t = sizeArray[getFileName(file.text)]
+
+            const td = document.createElement('td')
+            td.className = 'age'
+            td.innerHTML = '<span class="css-truncate css-truncate-target github-repo-size-td">' + getHumanReadableSize(t) + '</span>'
+
+            list[i].insertBefore(td, ageForReference[i++])
+          }
+        })
+      }
     }
   }
 }
